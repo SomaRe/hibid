@@ -310,7 +310,6 @@ def get_lots_from_live_auction(lot_id, get_time_left=False):
         if get_time_left:
             lot = result["data"]["liveCatalogLots"]["liveLots"]
             min_time = min([i["lotState"]["timeLeftSeconds"] for i in lot if i["lotState"]["timeLeftSeconds"] > 0 ])
-            print(min_time)
             return int(min_time)
         return result
     else:
