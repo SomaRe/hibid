@@ -338,6 +338,14 @@ def track_and_update_data(lot_id, file_name, sleep_time=60):
             for lot in live_lots:
                 if lot['itemId'] not in [i['itemId'] for i in d["lots"]]:
                     d["lots"].append(lot)
+                else:
+                    # see if lot["lotState"]["HighBid"] is different from the one in the dict
+                    for i in d["lots"]:
+                        if i["itemId"] == lot["itemId"]:
+                            if i["lotState"]["highBid"] != lot["lotState"]["highBid"]:
+                                i["lotState"] = lot["lotState"]
+                                print(f"Lot {lot['itemId']} has a new high bid: {lot['lotState']['highBid']}")
+
         elif num_tries > 5:
             break
         else:
