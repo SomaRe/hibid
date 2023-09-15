@@ -30,7 +30,7 @@ def countdown(total_seconds):
         # Wait for 1 second before updating the display
         time.sleep(1)
         total_seconds -= 1
-    print(' ' * len(time_remaining), end='\r')
+    print(" " * len(time_remaining), end = "\r")
     print("Countdown completed!")
 
 
@@ -309,13 +309,13 @@ def get_lots_from_live_auction(lot_id, get_time_left=False):
         result = response.json()
         if get_time_left:
             lot = result["data"]["liveCatalogLots"]["liveLots"]
-            min_time = min([i["lotState"]["timeLeftSeconds"] for i in lot if i["lotState"]["timeLeftSeconds"]])
+            min_time = min([i["lotState"]["timeLeftSeconds"] for i in lot if i["lotState"]["timeLeftSeconds"] > 0 ])
+            print(min_time)
             return int(min_time)
         return result
     else:
         print("Error:", response.status_code)
         return None
-
 
 def track_and_update_data(lot_id, file_name, sleep_time=60):
     num_tries = 0
@@ -343,6 +343,8 @@ def track_and_update_data(lot_id, file_name, sleep_time=60):
             break
         else:
             num_tries += 1
+            print(f"Number of tries: {num_tries}")
+            
 
         # save to json file
         try:
@@ -352,7 +354,6 @@ def track_and_update_data(lot_id, file_name, sleep_time=60):
             print(f"Error saving to file: {e}")
         
         countdown(60)
-
 
 
 
