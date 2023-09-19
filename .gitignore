@@ -1,4 +1,5 @@
 __pycache__
+analyze.ipynb
 app.log
 geckodriver
 test_files
