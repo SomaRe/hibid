@@ -2559,3 +2559,6 @@
 2023-09-17 23:39:45,399 - ERROR - Error fetching lots from live auction. Status code: 400
 2023-09-17 23:39:45,399 - WARNING - Failed to fetch data. Retry 4 of 3
 2023-09-17 23:39:46,994 - INFO - Tracking auction 480696 from Encore_Auctions_Inc in:
+2023-09-18 02:40:05,582 - INFO - Interrupted by user. Exiting...
+2023-09-18 02:40:12,293 - INFO - Tracking auction 480696 from Encore_Auctions_Inc in:
+2023-09-19 15:36:31,375 - INFO - Interrupted by user. Exiting...
