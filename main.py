@@ -214,24 +214,6 @@ def get_scheduled_auctions(auctioneer_id, closest_auction_only=True):
         # Print an error message and return None in case of an error
         logging.error(f"Error fetching scheduled auctions. Status code: {response.status_code}")
         return None
-    response = requests.post(graphql_url, json=payload)
-
-    if response.status_code == 200:
-        result = response.json()
-
-        if closest_auction_only:
-            # Extract information about the closest auction
-            closest_auction = result["data"]["auctionSearch"]["pagedResults"]["results"][0]["auction"]
-            auc_id = closest_auction["id"]
-            auctioneer_name = closest_auction["auctioneer"]["name"]
-            return auc_id, auctioneer_name
-        else:
-            # Return the entire GraphQL response
-            return result
-    else:
-        # Print an error message and return None in case of an error
-        logging.error(f"Error fetching scheduled auctions. Status code: {response.status_code}")
-        return None
   
 
 def update_auction_data(lot_id, auction_data, item_ids):
@@ -274,7 +256,7 @@ def update_auction_data(lot_id, auction_data, item_ids):
     return True
 
 
-def track_and_update_data(lot_id, file_name, sleep_time=60, max_retries=3):
+def track_and_update_data(lot_id, file_name, sleep_time=60, max_retries=3, save_interval=15):
     """
     Continuously tracks and updates auction data, saving to a JSON file.
     
@@ -291,6 +273,7 @@ def track_and_update_data(lot_id, file_name, sleep_time=60, max_retries=3):
         - The function logs any errors encountered during data fetching or file saving.
     """
     num_tries = 0
+    loop_count = 0
     file_path = os.path.join("auctions", file_name)
 
     # Load existing data if file exists, else initialize
@@ -304,23 +287,26 @@ def track_and_update_data(lot_id, file_name, sleep_time=60, max_retries=3):
         }
 
     while True:
+        loop_count += 1
         item_ids = set(auction_data["lots"].keys())
         try:
             success = update_auction_data(lot_id, auction_data, item_ids)
             if not success:
                 num_tries += 1
                 logging.warning(f"Failed to fetch data. Retry {num_tries} of {max_retries}")
+                print(f"Failed to fetch data. Retry {num_tries} of {max_retries}")
                 if num_tries > max_retries:
                     break
         except Exception as e:
             logging.error(f"Error fetching data: {e}")
 
-        # Save to json file
-        try:
-            with open(file_path, "w") as f:
-                json.dump(auction_data, f, indent=4, sort_keys=True)
-        except Exception as e:
-            logging.error(f"Error saving to file: {e}")
+        # Save to json file every save_interval iterations
+        if loop_count % save_interval == 0:
+            try:
+                with open(file_path, "w") as f:
+                    json.dump(auction_data, f, indent=4, sort_keys=True)
+            except Exception as e:
+                logging.error(f"Error saving to file: {e}")
         
         countdown(sleep_time)
 
