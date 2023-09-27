@@ -3,3 +3,5 @@ analyze.ipynb
 app.log
 geckodriver
 test_files
+flask_app
+analyze_codes
